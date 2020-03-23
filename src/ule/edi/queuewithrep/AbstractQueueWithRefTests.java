@@ -90,6 +90,7 @@ public abstract class AbstractQueueWithRefTests {
 	public void testEliminarDatoIlegal() {
 		//excepcion
 		S1.remove("A", -1);
+		S1.remove("A",5);
 	}
 	
 	@Test (expected=NoSuchElementException.class)
@@ -103,8 +104,10 @@ public abstract class AbstractQueueWithRefTests {
 		//con datos qeu ya existen
 		S1.clear();
 		S1.add("A",5);
-		S1.remove("A",6);//primero no hacer nada porque es mayor
-		S1.remove("A",3);
+		S1.add("B",10);
+		
+		S1.remove("B",1);
+		S1.remove("B",12);// no hacer nada porque es mayor a lo que existe en la lista
 		//no puedo hacer que elimine uno que no está porque es una excepción luego nunca pasa por el else del if que tengo
 		
 	}
@@ -166,7 +169,7 @@ public abstract class AbstractQueueWithRefTests {
 		S1.add("a",2);
 		S1.add("b");
 		int cuantos;
-		cuantos=S1.count("a");
+		cuantos=S1.count("b");
 		System.out.println(cuantos);
 		cuantos=S1.count("z");
 		System.out.println(cuantos);

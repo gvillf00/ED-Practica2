@@ -61,9 +61,7 @@ public class LinkedQueueWithRepImpl<T> implements QueueWithRep<T> {
 				//devuelvo el valor que tenía
 				return(elem);
 			}
-			public void remove() throws UnsupportedOperationException {
-				throw new UnsupportedOperationException();	
-			}
+			
 		}
 		////// FIN ITERATOR
 	
@@ -104,7 +102,8 @@ public class LinkedQueueWithRepImpl<T> implements QueueWithRep<T> {
 			
 			if (contains(element)) {
 				//le incremento las times veces
-				for (int i=0;i<count;i++) {
+				
+				while (ListaAux!=null) {
 					if (ListaAux.elem.equals(element)) {
 						//lo hemos encontrado incremento las veces
 						ListaAux.num =ListaAux.num + times;
@@ -117,7 +116,8 @@ public class LinkedQueueWithRepImpl<T> implements QueueWithRep<T> {
 				
 			}else {
 				//no está el elemento lo añado al final de la lista enlazada
-				for (int i=0;i<count;i++) {
+				
+				while (AnadirNodo!=null) {
 					AnadirNodo=AnadirNodo.next;
 				}
 				//al salir del bucle está en el final
@@ -158,7 +158,8 @@ public class LinkedQueueWithRepImpl<T> implements QueueWithRep<T> {
 		QueueWithRepNode<T> nodoAux;
 		nodoAux= front;//le asigno la lista enlazada
 		//recorrer y comparar con el equals.
-		for (int i=0;i<count;i++)
+		
+		while (nodoAux!=null)
 		{
 			if (nodoAux.elem.equals(element)) {
 				return true;
@@ -183,7 +184,8 @@ public class LinkedQueueWithRepImpl<T> implements QueueWithRep<T> {
 		long totalcola=0;
 		if (!isEmpty()) {
 			//recorro la cola si no está vacía
-			for (int i=0;i<count;i++) {
+			
+			while (ListaAux!=null) {
 				totalcola=totalcola + ListaAux.num;
 				ListaAux=ListaAux.next;
 			}
@@ -206,7 +208,8 @@ public class LinkedQueueWithRepImpl<T> implements QueueWithRep<T> {
 				QueueWithRepNode<T> nodoAux;
 				nodoAux=front;
 				//si lo contiene tengo que buscarlo para devolver su valor, recorro
-				for (int i=0;i<count;i++) {
+				
+				while (nodoAux!=null) {
 					if (nodoAux.elem.equals(element)) {
 						//es igual al element que me pasa, capturo su valor
 						CuantosHay=nodoAux.num;
@@ -239,10 +242,11 @@ public class LinkedQueueWithRepImpl<T> implements QueueWithRep<T> {
 		//creo una variable de tipo iterador
 		Iterator<T> miIterador=iterator();
 		if (!isEmpty()) {
-			for (int i=0;i<count;i++) {
-				if (miIterador.hasNext()){
+			
+			while (miIterador.hasNext()) {
+				//if (miIterador.hasNext()){
 					buffer.append(miIterador.next().toString() + ' ');
-				}
+				//}
 			}
 		}
 		buffer.append(")");
@@ -285,11 +289,12 @@ public class LinkedQueueWithRepImpl<T> implements QueueWithRep<T> {
 		//vble auxiliar booleana para no hacer todo el bucle y salir en cuanto lo encuentre
 		boolean encontrado=false;
 		
-		for (int i=0;i<count && !encontrado;i++) {
+		while (listaAux!=null && !encontrado) {
 			if (listaAux.elem.equals(element)) {
 				if (listaAux.num <=times) {
 					//excepción y acaba la ejecución
 					throw new IllegalArgumentException();
+					//System.out.println("numero de veces mayor a las existentes");
 				}
 				//le resto lo que me pasan en el nodo correspondiente
 				listaAux.num =listaAux.num-times;	

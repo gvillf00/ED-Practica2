@@ -5,14 +5,13 @@ import java.util.NoSuchElementException;
 
 import ule.edi.exceptions.EmptyCollectionException;
 
+
 public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 	
 	// atributos
-	
-    private final int capacityDefault = 10;
-	
+    private final int capacityDefault = 10; //capacidad por defecto del array
 	ElemQueueWithRep<T>[] data; //mi array
-    private int count; //contador para recorrerlo
+    private int count; //numero de posiciones ocupadas del array
     
 	
 	@SuppressWarnings("hiding")
@@ -26,96 +25,125 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 	}
 
 	
+
 	///// ITERADOR //////////
 	@SuppressWarnings("hiding")
 	public class ArrayQueueWithRepIterator<T> implements Iterator<T> {
-		int actual; //indice del array en el que leo
-		int contador; //posiciones del array ocupadas.
-		int nuevocaracter; //
-		ElemQueueWithRep<T> [] MiArray;
-		
-		public ArrayQueueWithRepIterator(ElemQueueWithRep<T>[] ArrayDeNodos, int count){
-			//TODO
-			contador=count;
-			actual=0;
-			nuevocaracter=0;
-			MiArray=(ElemQueueWithRep<T>[]) ArrayDeNodos;
+
+		private int count;
+		private int actual;
+		private int index; 
+		private ElemQueueWithRep<T>[] MiLista;
+
+		public ArrayQueueWithRepIterator(ElemQueueWithRep<T>[] cola, int size){
+			//en el constructor asigno el valor de las variables
+			MiLista = cola;
+			count = size;
+			actual = 0;
+			index =-1;
 		}
 
 		@Override
 		public boolean hasNext() {
-			//TODO
-			return (actual < contador);
-			//return false;
-		
+			return (actual < count && index <MiLista[actual].num);
+
 		}
 
 		@Override
+
+
 		public T next() {
-			//TODO
-			//ME VA A DEVOLVER ELEM SOLO
-			//LLAMO A ESTE MÉTODO CUANDO QUIERO RECORRER DE MANERA SECUENCIAL EL ARRAY. COMO ES EL STRING
-			if (! hasNext())
-			{
+			T aux = null;
+			if (!hasNext()) {
 				throw new NoSuchElementException();
 			}
-	
-			T Elemento=MiArray[actual].elem;
-			nuevocaracter++;
-			if (nuevocaracter==MiArray[actual].num)
-			{
-				nuevocaracter=0;
-				actual++;
+			// compruebo si hay elementos dentro del actual
+			if (index < MiLista[actual].num) {
+				aux = MiLista[actual].elem;
+
 			}
-				
-			return Elemento;
-			//return null;
-		}
-		
-		//hay que implementar el remove del iterador.
-		//@Override
-		//public T remove() {
-			
+			index++;
+
+			if (index == MiLista[actual].num) {
+				actual++;
+				aux = MiLista[actual].elem;
+			}
+			return aux;		
+
+		}  
+
+		//public void remove() throws UnsupportedOperationException {
+			//throw new UnsupportedOperationException();	
 		//}
 
 	}
+
 	////// FIN ITERATOR
 	
 	
     
 	@SuppressWarnings("unchecked")
 	public ArrayQueueWithRepImpl() {
-		//TODO
 		data=new ElemQueueWithRep[capacityDefault];
+		count=0;
+	}
+	
+	@SuppressWarnings("unchecked")
+	public ArrayQueueWithRepImpl(int capacity) {
+		data = new ElemQueueWithRep[capacity];
 		count=0;
 	}
 	
 	
 			@Override
 			public void add(T element, int times) {
-				// TODO Auto-generated method stub
-				int Encontrado=BuscarIndice(element);
-				if (Encontrado==-1)
-				{
-					if (size() == data.length)
-					{
-						expandCapacity();
+				// Implemento excepciones
+				if (element==null) {
+					throw new NullPointerException();
+				}
+				if (times<0) {
+					throw new IllegalArgumentException();
+				}
+				//primero tengo que comprobar que no esté vacía
+				if (!isEmpty()) {
+					//he creado el método BuscarIndice en lugar del contains para que además de saber si está
+					//me devuelva la posición en la que se encuentra.
+					int Encontrado=BuscarIndice(element);
+					if (Encontrado==-1)
+					{	//no lo ha encontrado, luego es nuevo
+						if (count == data.length)
+						{	//coinciden count y la longitud del array entonces tengo que expandir capacidad.
+							expandCapacity();
+						}
+						//hay espacio en el array, inserto en el valor count que es el qeu corresponde
+						//si count es 3, los tres ocupados son las posiciones 0,1 y 2 luego la posición 3 es la 
+						//siguiente vacía.
+						data[count] = new ElemQueueWithRep<T>(element,times);
+						
+						//incrementeo en uno a count.
+						count++;
 					}
-					data[count].elem = element;
-					data[count].num=times;
+					//si lo contiene debería añadir times veces
+					else {
+						data[Encontrado].num=data[Encontrado].num+times;
+					}
+				}else {
+					//si está vacía es el primero lo añado
+					data[count] = new ElemQueueWithRep<T>(element,times);
+					count++;
+					//System.out.println("hola");
+					
 				}
-				//si lo contiene debería añadir una unidad
-				else {
-					data[Encontrado].num=data[Encontrado].num+times;
-				}
-				
-				
+					
 			}
-			
-
 
 			@Override
 			public void add(T element) {
+				// implemento excepciones
+				if (element==null) {
+					throw new NullPointerException();
+				}
+				//llamo a la otra función add pero pasándole 1
 				this.add(element, 1);
 				
 			}
@@ -123,23 +151,26 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 			@Override
 			public void remove(T element, int times)  {
 				
-				//busco en el array si está el elemento
-				if (contains(element))
+				if (element == null) {
+					throw new NullPointerException("element es null");
+				}
+				if (times <0) {
+					throw new IllegalArgumentException("número no puede ser negativo");
+				}
+				if (!contains(element)) {
+					throw new NoSuchElementException("el elemento no está en la lista");
+				}
+				//necesito saber la posición en la que se encuentra.
+				int encontrado=-1;
+				encontrado=BuscarIndice(element);//me devuelve la posición real en el array del elemento encontrado
+				
+				if (encontrado !=-1)
 				{
-					if (data[count].num>=times) {
-						//si las veces que me pasa son igual o mayor de las que tiene almacenadas lo elimino entero
-						//NO SE LO QUE ESTOY HACIENDO AQUÍ.
-						T result;
-						result= data[count].elem;
-						data[search] = data[count-1];
-						data[count-1]=null;
-						count--;
-						//return result;
-					}
-					else
-					{
-						//si son menores las resto
-						data[count].num=data[count].num - times;
+					
+					if (data[encontrado].num>times) {
+						//si las unidades a restar son menos qeu las almacenadas las resto
+						//si son mayores no hago nada.
+						data[encontrado].num=data[encontrado].num - times;
 					}
 				}
 				
@@ -148,44 +179,54 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 			@Override
 			public int remove() throws EmptyCollectionException {
 				//eliminar el primer elemento del array y devuelve el num que tenía.
-				
 				if (isEmpty())
 				{
 					throw new EmptyCollectionException("Array Vacío");
 				}
 				
 				int Almacenaba;
-				
+				//valor del num que almacena antes de eliminarlo y que voy a devolver.
 				Almacenaba=data[0].num;
 				
-				//recorrer con bucle e ir pasando de uno en uno a la posición anterior.
+				//recorro el array porque tengo que ir moviendo todo el array a una posición menos
+				for (int i=0;i<count-1;i++)
+				{
+					//guardo en la posición i que empieza en 0 la que voy a macharcar el valor de la siguiente
+					//y así sucesivamente hasta llegar al la última posición que será repetida con la última movida
+					//y al salir del bucle la pongo a null y reduzco count en 1
+					data[i]=data[i+1];
+				}	
 				
-				//primero pongo el array en la posición count a null y decremento el count
-					
-				
-				//TODO		
+				data[count-1]=null;
+				count--;
+				return Almacenaba;	
 			}
 
 			@Override
 			public void clear() {
-				//TODO
-				//lo recorro dando valor null y el count a 0
-				//LA VOY RECORRIENDO Y LLAMANDO AL METODO REMOVE.
-				for (int i=0; i<count; i++)
-				{
-					
-					
+				if (!isEmpty()) {
+					//lo recorro dando valor null y el count a 0
+					for (int i=0; i<count; i++)
+					{
+						data[i]=null;
+						
+					}
+					count=0;
 				}
 			}
 			
 
 			@Override
 			public boolean contains(T element) {
-				//TODO
+				// implemento excepciones
+				if (element==null) {
+					throw new NullPointerException();
+				}
+				//inicializo a -1, no encontrado la vble a devolver.
 				int search = -1;
 				for (int index=0; index< count && search == -1;index++)
 				{
-					if (data[index].equals(element)) 
+					if (data[index].elem.equals(element)) 
 					{
 						search = index;
 					}
@@ -197,9 +238,13 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 			public int BuscarIndice(T element) {
 				//TODO
 				int search = -1;
+				if (isEmpty())
+				{
+					return search;
+				}
 				for (int index=0; index< count && search == -1;index++)
 				{
-					if (data[index].equals(element)) 
+					if (data[index].elem.equals(element)) 
 					{
 						search = index;
 					}
@@ -210,47 +255,64 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 
 			@Override
 			public boolean isEmpty() {
-				// TODO Auto-generated method stub
+				
 				return (count==0);
 				//return false;
 			}
 
 			@Override
 			public long size() {
-				// TODO Auto-generated method stub
-				return count;
-			 
+				long acumulado=0;
+				if (!isEmpty()) {
+					//si no está vacía la recorro
+					for (int index=0; index< count;index++)
+					{
+						acumulado=acumulado + data[index].num;
+					}
+				}
+				return acumulado;
 			}
 
 			@Override
 			public int count(T element) {
-				// TODO Auto-generated method stub
+				// implemento excepciones
+				if (element==null) {
+					throw new NullPointerException();
+				}
 				//devolver la vble num del elemento pasado
 				//si existe claro
-				if (contains(element))
+				int Encontrado=BuscarIndice(element);//de devuelve la posición si lo ha encontrado o -1 si no
+				
+				if (Encontrado!=-1)
 				{
-					return data[count].num;
+					return (data[Encontrado].num);
 				}
-				else 
-				{
-					return 0;
-				}
+				
+				else {
+					return (0);
+				}	
 		          
 			}
 			
 			private void expandCapacity()
 			{
-				//creo un nuevo objeto array con el doble de capacidad por defecto
-				ElemQueueWithRep<T> [] ArrayTemp;
-				ArrayTemp=new ElemQueueWithRep[data.length*2];
+				//ElemQueueWithRep<T>[] nuevo=(ElemQueueWithRep<T>[]) new ElemQueueWithRep[data.length*2];
 				
-				for (int index=0; index <data.length; index++)
+				//creo un nuevo objeto array sumándole la capacidad por defecto a la longitud del array actual
+				ElemQueueWithRep<T> [] ArrayTemp;
+				
+				int NuevaCapacidad=count+capacityDefault;
+				
+				ArrayTemp=new ElemQueueWithRep[NuevaCapacidad];
+				
+				
+				for (int index=0; index <count; index++)
 				{
-					//ArrayTemp[index].elem =data[index].elem;
-					//ArrayTemp[index].num =data[index].num;
-					//esto no estoy segura de tener que ponerlo, o mejor solo con esto vale.
+					//cargo el array temporal con los datos del data
 					ArrayTemp[index] = data[index];
 				}
+				//cuando ya lo tengo cargado pero de mayor cantidad se lo asigno al array original
+				//el count no varía porque sigue teniendo los mismos datos.
 				data= ArrayTemp;
 			}
 
@@ -268,16 +330,23 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 				
 				final StringBuffer buffer = new StringBuffer();
 				
-				buffer.append("(");
-
-				// TODO Ir aÃ±adiendo en buffer las cadenas para la representaciÃ³n de esta cola
-				for (int index=0; index < count; index++)
+				if (isEmpty()){
+					buffer.append("()");
+				} else 
 				{
-					buffer.append(data[index].toString() + '\n');
+					buffer.append("(");
+					
+					//hacerlo con iterador
+					Iterator<T> miIterador=iterator();
+					
+					while (miIterador.hasNext())
+					{
+						buffer.append(miIterador.next().toString() + ' ');
+					}
+					
+					
+					buffer.append(")");
 				}
-				
-				buffer.append(")");
-				
 				return buffer.toString();
 			}
 			

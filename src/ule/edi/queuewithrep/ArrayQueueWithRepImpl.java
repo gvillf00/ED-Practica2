@@ -40,12 +40,13 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 			MiLista = cola;
 			count = size;
 			actual = 0;
-			index =-1;
+			//index =-1;
+			index=0;
 		}
 
 		@Override
 		public boolean hasNext() {
-			return (actual < count && index <MiLista[actual].num);
+			return (actual < count && index <= MiLista[actual].num);
 
 		}
 
@@ -54,22 +55,23 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 
 		public T next() {
 			T aux = null;
-			if (!hasNext()) {
-				throw new NoSuchElementException();
-			}
+			
 			// compruebo si hay elementos dentro del actual
-			if (index < MiLista[actual].num) {
-				aux = MiLista[actual].elem;
+			//if (index < MiLista[actual].num) {
+			//	aux = MiLista[actual].elem;
 
-			}
-			index++;
+			//}
+			aux = MiLista[actual].elem;
+			
 
 			if (index == MiLista[actual].num) {
 				actual++;
 				aux = MiLista[actual].elem;
 			}
+			
+			index++;
 			return aux;		
-
+			
 		}  
 
 		//public void remove() throws UnsupportedOperationException {
@@ -164,15 +166,17 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 				int encontrado=-1;
 				encontrado=BuscarIndice(element);//me devuelve la posición real en el array del elemento encontrado
 				
-				if (encontrado !=-1)
-				{
+				//if (encontrado !=-1)
+				//{
 					
 					if (data[encontrado].num>times) {
 						//si las unidades a restar son menos qeu las almacenadas las resto
 						//si son mayores no hago nada.
 						data[encontrado].num=data[encontrado].num - times;
+					}else {
+						throw new IllegalArgumentException("Numero mayor al número almacenado");
 					}
-				}
+				//}
 				
 			}
 
@@ -330,23 +334,19 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 				
 				final StringBuffer buffer = new StringBuffer();
 				
-				if (isEmpty()){
-					buffer.append("()");
-				} else 
+				buffer.append("(");
+					
+				//hacerlo con iterador
+				Iterator<T> miIterador=iterator();
+				
+				while (miIterador.hasNext())
 				{
-					buffer.append("(");
-					
-					//hacerlo con iterador
-					Iterator<T> miIterador=iterator();
-					
-					while (miIterador.hasNext())
-					{
-						buffer.append(miIterador.next().toString() + ' ');
-					}
-					
-					
-					buffer.append(")");
+					buffer.append(miIterador.next().toString() + ' ');
 				}
+				
+				
+				buffer.append(")");
+				
 				return buffer.toString();
 			}
 			

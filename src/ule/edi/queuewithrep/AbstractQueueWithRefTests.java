@@ -3,6 +3,7 @@ package ule.edi.queuewithrep;
 
 import static org.junit.Assert.*;
 
+import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import org.junit.*;
@@ -107,10 +108,16 @@ public abstract class AbstractQueueWithRefTests {
 		S1.add("B",10);
 		
 		S1.remove("B",1);
-		S1.remove("B",12);// no hacer nada porque es mayor a lo que existe en la lista
-		//no puedo hacer que elimine uno que no está porque es una excepción luego nunca pasa por el else del if que tengo
+		
 		
 	}
+	
+	@Test (expected=IllegalArgumentException.class)
+	public void testEliminarDemasiados() throws IllegalArgumentException {
+		S1.remove("B",12);
+	}
+	
+	
 	
 	@Test (expected=EmptyCollectionException.class)
 	public void testEliminarSiVacia() throws EmptyCollectionException {
@@ -118,22 +125,34 @@ public abstract class AbstractQueueWithRefTests {
 		S1.clear();
 		int tenia;
 		tenia=S1.remove();
+		assertTrue(S1.isEmpty());
 	}
 	
 	@Test 
 	public void testRemoveValid() throws EmptyCollectionException {
-		
 		//assertEquals(S1.remove(),2); //si pongo esta línea me pasa por la excepción pero me da error el resto
 		S1.add("1",2);
 		S1.add("2");
-		assertEquals(S1.remove(),2);
+		assertEquals(S1.remove(),1);
 		
 	}
 	
 	@Test
 	public void testLimpiarArray() {
-		S1.clear();//para qeu pase por si está vacia o si tiene contenido
+		//S1.clear();//para qeu pase por si está vacia o si tiene contenido
+		//assertTrue(S1.isEmpty());
+		//S1.clear();
+		//assertTrue(S1.isEmpty());
+		
+		assertEquals(S1.size(),6);
+		assertFalse(S1.isEmpty());
+		S1.clear();//para qeu pase por si est? vacia o si tiene contenido
+		assertEquals(S1.size(),0);
+		assertTrue(S1.isEmpty());
 		S1.clear();
+		assertEquals(S1.size(),0);
+		assertTrue(S1.isEmpty());
+
 	}
 	
 	
@@ -143,17 +162,18 @@ public abstract class AbstractQueueWithRefTests {
 		S1.clear();
 		S1.add("a",2);
 		S1.add("b");
-		
 		assertTrue(S1.contains("a"));	
 	}
 	
 	//si contiene cuando el elemento es nulo
 	@Test (expected=NullPointerException.class) 
 	public void testContieneNull() {
-		boolean locontiene;
-		locontiene=S1.contains(null);
-		int cuantos;
-		cuantos=S1.count(null);
+		//boolean locontiene;
+		//locontiene=S1.contains(null);
+		assertFalse(S1.contains(null));
+		//int cuantos;
+		//cuantos=S1.count(null);
+		assertEquals(S1.count(null), 3);
 	}
 	
 	@Test (expected=NullPointerException.class) 
@@ -168,37 +188,58 @@ public abstract class AbstractQueueWithRefTests {
 		S1.clear();
 		S1.add("a",2);
 		S1.add("b");
-		int cuantos;
-		cuantos=S1.count("b");
-		System.out.println(cuantos);
-		cuantos=S1.count("z");
-		System.out.println(cuantos);
+		
+		assertEquals(S1.count("b"), 1);
+		//System.out.println(cuantos);
+		//cuantos=S1.count("z");
+		assertEquals(S1.count("z"), 0);
+		//System.out.println(cuantos);
+		S1.clear();
+		assertEquals(S1.count("a"), 0);
 	}
 	
 	@Test
 	public void testSize() {
-		//assertEquals(S1.count("a"), 2);
+		
+		
+		assertEquals(S1.count("A"), 1);
 		S1.clear();
-		long cuantos;
-		cuantos=S1.size();
-		System.out.println(cuantos);
+		assertTrue(S1.isEmpty());
+		assertEquals(S1.size(), 0);
 		S1.add("a",2);
 		S1.add("b");
-		cuantos=S1.size();
-		System.out.println(cuantos);
+		assertEquals(S1.size(), 3);
+
+
 	}
 	
 	@Test
-	public void testMostrarPantalla() throws NoSuchElementException {
-		//S1.add("1");
-		//assertEquals(S1.toString(), "(1 )");
-		S1.clear();
-		S1.add("a",2);
-		S1.add("b");
-		System.out.println(S1.toString());
-		//hago un clear y lo llamo con la lista vacía
-		S1.clear();
-		System.out.println(S1.toString());
-		
-	}
+	public void testIteratorWithDuplicates2() {
+			S1.clear();
+			S1.add("A", 2);
+			S1.add("B", 1);
+				
+			Iterator<String> Si = S1.iterator();
+			//Tu código no lo pasa, porque no están bien los iteradores
+			Assert.assertTrue(Si.hasNext());
+			Assert.assertEquals(Si.next().toString(), "A");
+			Assert.assertTrue(Si.hasNext());
+			Assert.assertEquals(Si.next().toString(), "A");
+			Assert.assertTrue(Si.hasNext());
+			Assert.assertEquals(Si.next().toString(), "B");
+			
+		}
+	@Test
+	//Iterador sobre una cola CON duplicados: ")
+	public void testSalidaDatos() {
+			S1.clear();
+			S1.add("A", 2);
+			S1.add("B", 1);
+				
+			//Tu código no lo pasa, porque no están bien los iteradores
+			
+			Assert.assertEquals(S1.toString(), "(A A B )");
+			
+		}
+	
 }

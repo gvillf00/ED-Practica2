@@ -25,5 +25,22 @@ public class ArrayQueueWithRepRefTests extends AbstractQueueWithRefTests {
 		ArrayQueueWithRepImpl<String> S3=new ArrayQueueWithRepImpl(50);
 		
 	}
+	@Test
+	public void expandCapacityTest() {
+		ArrayQueueWithRepImpl<Integer> aq = new ArrayQueueWithRepImpl<Integer>(2);
+		aq.add(1);
+		aq.add(2);
+		aq.add(3);
+		aq.add(4);
+		aq.add(5);
+		aq.add(6);
+		aq.add(7);
+		aq.add(8);
+		aq.add(15);
+		aq.add(16);
+		aq.add(17);
+		aq.add(18);
+		
+	}
 
 }

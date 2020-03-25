@@ -44,19 +44,18 @@ public class LinkedQueueWithRepImpl<T> implements QueueWithRep<T> {
 			}
 			@Override
 			public T next() {
-				if (!hasNext())
-				{
-					//me devuelve una excepción y no sigue la ejecución.
-					throw new NoSuchElementException();
-				}
+				
 				//le resto un valor a lo que llevaba el noto A2 - A1
 				valorNum--;
 				T elem;
 				elem=nodotemp.elem;//almaceno también el elemento que trae, en este caso A
-				if (valorNum==0)
+				if (valorNum<=0)
 				{
 					//si al restar me quedo sin num paso al siguiente porque se ha agotado el nodo
 					nodotemp = nodotemp.next;
+					if (nodotemp!=null) {
+						valorNum=nodotemp.num;
+					}
 				}
 				//devuelvo el valor que tenía
 				return(elem);
@@ -107,8 +106,7 @@ public class LinkedQueueWithRepImpl<T> implements QueueWithRep<T> {
 					if (ListaAux.elem.equals(element)) {
 						//lo hemos encontrado incremento las veces
 						ListaAux.num =ListaAux.num + times;
-						//en el mismo sitio actualizo la lista enlazada front.
-						front.num = ListaAux.num;
+						
 					}
 					//me desplazo al siguiente
 					ListaAux=ListaAux.next;
@@ -117,13 +115,12 @@ public class LinkedQueueWithRepImpl<T> implements QueueWithRep<T> {
 			}else {
 				//no está el elemento lo añado al final de la lista enlazada
 				
-				while (AnadirNodo!=null) {
+				while (AnadirNodo.next!=null) {
 					AnadirNodo=AnadirNodo.next;
 				}
 				//al salir del bucle está en el final
-				AnadirNodo=nodoNuevo;
-				AnadirNodo.next =null;
-				front=AnadirNodo;
+				AnadirNodo.next=nodoNuevo;
+				
 				count++;
 			}
 		}
@@ -236,19 +233,16 @@ public class LinkedQueueWithRepImpl<T> implements QueueWithRep<T> {
 		
 		buffer.append("(");
 
-		// TODO Ir aÃ±adiendo en buffer las cadenas para la representaciÃ³n de esta bolsa
-		//creo una lista auxiliar donde meter mi front y la recorro con el iterador
-		QueueWithRepNode<T> nodoAux=front;
 		//creo una variable de tipo iterador
 		Iterator<T> miIterador=iterator();
-		if (!isEmpty()) {
+		//if (!isEmpty()) {
 			
 			while (miIterador.hasNext()) {
 				//if (miIterador.hasNext()){
 					buffer.append(miIterador.next().toString() + ' ');
 				//}
 			}
-		}
+		//}
 		buffer.append(")");
 		
 		return buffer.toString();
@@ -287,9 +281,9 @@ public class LinkedQueueWithRepImpl<T> implements QueueWithRep<T> {
 		//lista enlazada auxiliar para recorrerla y le asigno la original, front
 		QueueWithRepNode<T> listaAux=front;
 		//vble auxiliar booleana para no hacer todo el bucle y salir en cuanto lo encuentre
-		boolean encontrado=false;
+		//boolean encontrado=false; && !encontrado
 		
-		while (listaAux!=null && !encontrado) {
+		while (listaAux!=null ) {
 			if (listaAux.elem.equals(element)) {
 				if (listaAux.num <=times) {
 					//excepción y acaba la ejecución
@@ -298,11 +292,11 @@ public class LinkedQueueWithRepImpl<T> implements QueueWithRep<T> {
 				}
 				//le resto lo que me pasan en el nodo correspondiente
 				listaAux.num =listaAux.num-times;	
-				encontrado=true;
+				//encontrado=true;
 			}
 			listaAux=listaAux.next;
 		}
-		front=listaAux;
+		
 	}
 
 }

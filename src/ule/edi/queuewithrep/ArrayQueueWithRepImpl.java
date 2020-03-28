@@ -4,6 +4,7 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 
 import ule.edi.exceptions.EmptyCollectionException;
+import ule.edi.queuewithrep.LinkedQueueWithRepImpl.QueueWithRepNode;
 
 
 public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
@@ -12,6 +13,7 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
     private final int capacityDefault = 10; //capacidad por defecto del array
 	ElemQueueWithRep<T>[] data; //mi array
     private int count; //numero de posiciones ocupadas del array
+   
     
 	
 	@SuppressWarnings("hiding")
@@ -24,63 +26,53 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 		}
 	}
 
-	
-
-	///// ITERADOR //////////
+///// ITERADOR //////////
 	@SuppressWarnings("hiding")
 	public class ArrayQueueWithRepIterator<T> implements Iterator<T> {
 
-		private int count;
-		private int actual;
-		private int index; 
-		private ElemQueueWithRep<T>[] MiLista;
+		private int contador;
+		private int current;
+		private int times;
+		private ElemQueueWithRep<T>[] items;
 
-		public ArrayQueueWithRepIterator(ElemQueueWithRep<T>[] cola, int size){
-			//en el constructor asigno el valor de las variables
-			MiLista = cola;
-			count = size;
-			actual = 0;
-			//index =-1;
-			index=0;
+		public ArrayQueueWithRepIterator(ElemQueueWithRep<T>[] cola, int count){
+			this.contador = count;
+			this.items = cola;
+			this.current = 0;
+			this.times =0;
+
 		}
 
 		@Override
 		public boolean hasNext() {
-			return (actual < count && index <= MiLista[actual].num);
-
+			
+			return (current < count);
 		}
 
 		@Override
-
-
 		public T next() {
-			T aux = null;
-			
-			// compruebo si hay elementos dentro del actual
-			//if (index < MiLista[actual].num) {
-			//	aux = MiLista[actual].elem;
+			if(!hasNext()) {
+				throw new NoSuchElementException();
+			}
 
-			//}
-			aux = MiLista[actual].elem;
+			times++;
 			
-
-			if (index == MiLista[actual].num) {
-				actual++;
-				aux = MiLista[actual].elem;
+			if(this.times == items[current].num) {
+				current++;
+				times = 0;
+				
+				return items[current-1].elem;
 			}
 			
-			index++;
-			return aux;		
-			
-		}  
+			return items[current].elem;
 
-		//public void remove() throws UnsupportedOperationException {
-			//throw new UnsupportedOperationException();	
-		//}
+		}
+
+
 
 	}
-
 	////// FIN ITERATOR
+	
 	
 	
     
@@ -103,7 +95,7 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 				if (element==null) {
 					throw new NullPointerException();
 				}
-				if (times<0) {
+				if (times<=0) {
 					throw new IllegalArgumentException();
 				}
 				//primero tengo que comprobar que no esté vacía
@@ -156,7 +148,7 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 				if (element == null) {
 					throw new NullPointerException("element es null");
 				}
-				if (times <0) {
+				if (times <=0) {
 					throw new IllegalArgumentException("número no puede ser negativo");
 				}
 				if (!contains(element)) {
@@ -323,6 +315,7 @@ public class ArrayQueueWithRepImpl<T> implements QueueWithRep<T> {
 
 			@Override
 			public Iterator<T> iterator() {
+				
 				//esto me crea un nuevo objeto iterador que sabe recorrer el array de nodos que estamos creando.
 				return new ArrayQueueWithRepIterator(data,count);
 				// TODO Auto-generated method stub

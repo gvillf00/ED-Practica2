@@ -229,17 +229,37 @@ public abstract class AbstractQueueWithRefTests {
 			Assert.assertEquals(Si.next().toString(), "B");
 			
 		}
+	
 	@Test
 	//Iterador sobre una cola CON duplicados: ")
 	public void testSalidaDatos() {
 			S1.clear();
 			S1.add("A", 2);
 			S1.add("B", 1);
-				
-			//Tu código no lo pasa, porque no están bien los iteradores
-			
 			Assert.assertEquals(S1.toString(), "(A A B )");
 			
+			S1.clear();
+			S1.add("A", 2);
+			S1.add("B", 3);
+			Assert.assertEquals(S1.toString(), "(A A B B B )");
+			
+			S1.clear();
+			S1.add("A", 2);
+			S1.add("B", 3);
+			S1.add("C",5);
+			Assert.assertEquals(S1.toString(), "(A A B B B C C C C C )");
+				
 		}
+	//probar test con lista vacía
+	
+	@Test //(expected=NoSuchElementException.class) 
+	//Iterador sobre una cola vacía: ")
+	public void testIteratorForEmptyQueue() throws NoSuchElementException {
+		S1.clear();
+		assertEquals(S1.isEmpty(),true);		
+		assertEquals(S1.iterator().hasNext(),false);
+		Assert.assertEquals(S1.toString(), "()");
+	}
+
 	
 }

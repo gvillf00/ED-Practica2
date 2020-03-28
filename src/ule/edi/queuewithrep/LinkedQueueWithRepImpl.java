@@ -33,8 +33,10 @@ public class LinkedQueueWithRepImpl<T> implements QueueWithRep<T> {
 			QueueWithRepNode<T> nodotemp; //para iniciar una nueva lista enlazada
 			
 			public LinkedQueueWithRepIterator(QueueWithRepNode<T> nodo) {
-				nodotemp=nodo;//le paso a mi lista local el nodo actual
-				valorNum=nodo.num;//y extraigo su valor num a la vble local
+				if (!isEmpty()) {
+					nodotemp=nodo;//le paso a mi lista local el nodo actual
+					valorNum=nodo.num;//y extraigo su valor num a la vble local
+				}
 			}
 			
 			@Override
@@ -44,6 +46,10 @@ public class LinkedQueueWithRepImpl<T> implements QueueWithRep<T> {
 			}
 			@Override
 			public T next() {
+				
+				if (!hasNext()) {
+				    throw new NoSuchElementException();
+				}
 				
 				//le resto un valor a lo que llevaba el noto A2 - A1
 				valorNum--;
@@ -79,7 +85,7 @@ public class LinkedQueueWithRepImpl<T> implements QueueWithRep<T> {
 		if (element==null) {
 			throw new NullPointerException();
 		}
-		if (times<0) {
+		if (times<=0) {
 			throw new IllegalArgumentException();
 		}
 		
@@ -271,7 +277,7 @@ public class LinkedQueueWithRepImpl<T> implements QueueWithRep<T> {
 		if (element == null) {
 			throw new NullPointerException("element es null");
 		}
-		if (times <0) {
+		if (times <=0) {
 			throw new IllegalArgumentException("número no puede ser negativo");
 		}
 		if (!contains(element)) {
